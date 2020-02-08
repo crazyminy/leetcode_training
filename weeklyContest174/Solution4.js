@@ -1,72 +1,58 @@
-// /**
-//  * @param {number[]} arr
-//  * @param {number} d
-//  * @return {number}
-//  */
-// var maxJumps = function(arr, d) {
-//     let set = new Set(arr);
-//     let sortedArr = Array.from(set);
-//     sortedArr.sort((a,b)=>(b-a));
-//     let maxVal = sortedArr[0];
-//     console.log(sortedArr);
-//     let dp = new Array(arr.length).fill(0);
-//     for(let i = 0;i<arr.length;i++){
-//         if(dp[i]!==0){
-//             doSearch(i,d,maxVal,dp,arr);
-//         }
-//     }
+/**
+ * @param {number[]} arr
+ * @param {number} d
+ * @return {number}
+ */
+var maxJumps = function(arr, d) {
+    let dp = new Array(arr.length).fill(0);
+    let res = [0];
+    let nodeArr = arr.map((val,index)=>new Node(index,val));
+    nodeArr.sort((n1,n2)=>n1.val-n2.val);
+    nodeArr.forEach((node)=>{
+        doSearch(node,res,dp,arr,d);
+    });
+    return res[0];
+};
 
-// };
-
-// function doSearch(index,d,maxVal,dp,arr){
-//     for(let i = 1;i<=d;i++){
-//         let left = index-i<0?-1:arr[index-i];
-//         let right = index+i>dp.length-1?-1:arr[index+i];
+/**
+ * 
+ * @param {Node} node 
+ * @param {number[]} maxVal 
+ * @param {number[]} dp 
+ * @param {number[]} arr 
+ * @param {number} d
+ */
+function doSearch(node,maxVal,dp,arr,d){
+    let centerIndex = node.index;
+    let threshold = node.val;
+    let curMax = 0;
+    for(let i = centerIndex-1;i>=0&&i>=centerIndex-d;i--){
+        if(arr[i]>=threshold){
+            break;
+        }
+        if(dp[i]>curMax){
+            curMax = dp[i];
+        }
 
         
-
-//     }
-    
-// }
-
-// maxJumps([6,4,14,6,8,13,9,7,10,6,12], 2);
-
-
-let 
-let arrs = data.split("-");
-let year = parseInt(arrs[0]);
-let month = parseInt(arrs[1]);
-let day = parseInt(arrs[2]);
-function judge(year){
-    if(year%400 === 0){
-        return true;
     }
-    return year%4 ===0 && year%100!==0
+    for(let i = centerIndex+1;i<arr.length&&i<=centerIndex+d;i++){
+        if(arr[i]>=threshold){
+            break;
+        }
+        if(dp[i]>curMax){
+            curMax = dp[i];
+        }
+    }
+    dp[centerIndex] = curMax+1;
+    if(curMax+1>maxVal[0]){
+        maxVal[0] = curMax+1;
+    }
+
+}
+function Node(index,val){
+    this.index = index;
+    this.val = val;
 }
 
-var monthMapDays = [
-    0,
-    31,
-    28,
-    31,
-    30,
-    31,
-    30,
-    31,
-    31,
-    30,
-    31,
-    30,
-    31
-]
-
-if(judge(year)){
-    monthMapDays[2]++;
-}
-let res = 0;
-for(let i = 1;i<month;i++){
-    res+=monthMapDays[i];
-}
-
-res+=day;
-console.log(res);
+console.log(maxJumps([6,4,14,6,8,13,9,7,10,6,12], 2));
